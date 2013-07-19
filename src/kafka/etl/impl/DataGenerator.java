@@ -19,7 +19,9 @@ package kafka.etl.impl;
 
 
 import java.net.URI;
+import java.security.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -94,7 +96,7 @@ public class DataGenerator {
 		_producer.send(_topic, new ByteBufferMessageSet(kafka.message.NoCompressionCodec$.MODULE$, list));
 
 		// close the producer
-		_producer.close();
+		//_producer.close();
 		
 		// generate offset files
 		generateOffsets();
@@ -102,8 +104,10 @@ public class DataGenerator {
 
     protected void generateOffsets() throws Exception {
         JobConf conf = new JobConf();
+        java.util.Date date= new java.util.Date();
         conf.set("hadoop.job.ugi", _props.getProperty("hadoop.job.ugi"));
         conf.setCompressMapOutput(false);
+        Calendar cal = Calendar.getInstance();
         Path outPath = new Path(_offsetsDir + Path.SEPARATOR + "1.dat");
         FileSystem fs = outPath.getFileSystem(conf);
         if (fs.exists(outPath)) fs.delete(outPath);
